@@ -1,1 +1,108 @@
+/*
+===============================================================================
+DDL Script: Create Bronze Tables
+===============================================================================
+Script Purpose:
+    This script creates tables in the 'bronze' schema, dropping existing tables 
+    if they already exist.
+	  Run this script to re-define the DDL structure of 'bronze' Tables
+===============================================================================
+*/
 
+CREATE OR REPLACE PROCEDURE bronze.create_table_bronze()
+LANGUAGE plpgsql 
+AS $$
+DECLARE 
+		procedure_start_time TIMESTAMP;
+		procedure_end_time TIMESTAMP;
+		start_batch_time TIMESTAMP;
+		end_batch_time TIMESTAMP;
+BEGIN
+		procedure_start_time:=clock_timestamp();
+		RAISE NOTICE '======================================';
+		RAISE NOTICE '---------CREATE CRM TABLES-----------' ;
+		RAISE NOTICE '======================================';
+start_batch_time:= clock_timestamp();
+DROP TABLE  IF EXISTS bronze.cust_info;
+
+CREATE TABLE bronze.cust_info( 
+	 cst_id INT,
+	 cst_key VARCHAR(50),
+	 cst_firstname VARCHAR(50),
+	 cst_lastname VARCHAR(50),
+	 cst_marital_status VARCHAR(50),
+	 cst_gndr VARCHAR(50),	
+	 cst_create_date VARCHAR(50)
+	 
+);
+
+
+DROP TABLE IF EXISTS bronze.prd_info ;
+CREATE TABLE bronze.prd_info
+(
+	prd_id INT,
+	prd_key VARCHAR(50),
+	prd_nm VARCHAR(50),
+	prd_cost VARCHAR(50),
+	prd_line VARCHAR(50),
+	prd_start_dt DATE,
+	prd_end_dt DATE
+	
+);
+
+DROP TABLE  IF EXISTS bronze.sales_details;
+CREATE TABLE bronze.sales_details(
+	sls_ord_num VARCHAR(50),
+	sls_prd_key VARCHAR(50),
+	sls_cust_id INT,
+	sls_order_dt VARCHAR(50),
+	sls_ship_dt  VARCHAR(50),
+	sls_due_dt  VARCHAR(50),
+	sls_sales  INT,
+	sls_quantity  INT,
+	sls_price  INT
+	
+
+);
+end_batch_time:= clock_timestamp();
+
+RAISE NOTICE 'Time to create CRM tables % seconds ', end_batch_time-start_batch_time;
+RAISE NOTICE '';
+
+RAISE NOTICE '=========================================';
+RAISE NOTICE '-----------CREATE TABLE PRD -------------';
+RAISE NOTICE '=========================================';
+start_batch_time := clock_timestamp();
+
+DROP TABLE IF EXISTS bronze.CUST_AZ12 ;
+CREATE TABLE bronze.CUST_AZ12(
+		CID VARCHAR(50),
+		bdate VARCHAR(50),
+		gen VARCHAR(50)
+		
+);
+
+DROP TABLE  IF EXISTS bronze.LOC_A101;
+CREATE TABLE bronze.LOC_A101(
+	CID VARCHAR(50),
+	CNTRY VARCHAR(50)
+	
+);
+
+DROP TABLE  IF EXISTS bronze.PX_CAT_G1V2;
+CREATE TABLE bronze.PX_CAT_G1V2(
+	ID VARCHAR(50),
+	cat VARCHAR(50),
+	subcat VARCHAR(50),
+	maintenance VARCHAR(50)
+	
+);
+
+end_batch_time:=clock_timestamp();
+RAISE NOTICE 'Time to create PRD tables % seconds ', end_batch_time-start_batch_time;
+RAISE NOTICE '';
+procedure_end_time:=clock_timestamp();
+RAISE NOTICE 'Table created successfully in time % seconds',procedure_end_time-procedure_start_time;
+END; 
+$$;
+CALL bronze.create_table_bronze()
