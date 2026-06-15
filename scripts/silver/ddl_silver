@@ -1,1 +1,110 @@
+/*
+===============================================================================
+DDL Script: Create Silver Tables
+===============================================================================
+Script Purpose:
+    This script creates tables in the 'silver' schema, dropping existing tables 
+    if they already exist.
+	  Run this script to re-define the DDL structure of 'bronze' Tables
+===============================================================================
+*/
 
+CREATE OR REPLACE PROCEDURE silver.create_table_silver()
+LANGUAGE plpgsql 
+AS $$
+DECLARE 
+		procedure_start_time TIMESTAMP;
+		procedure_end_time TIMESTAMP;
+		start_batch_time TIMESTAMP;
+		end_batch_time TIMESTAMP;
+BEGIN
+		procedure_start_time:=clock_timestamp();
+		RAISE NOTICE '======================================';
+		RAISE NOTICE '----------CREATE CRM TABLES----------' ;
+		RAISE NOTICE '======================================';
+start_batch_time:= clock_timestamp();
+DROP TABLE IF EXISTS silver.cust_info ;
+CREATE TABLE silver.cust_info(
+cst_id INT,
+cst_key VARCHAR(20),
+firstname VARCHAR(20),
+lastname VARCHAR(20),
+marital_status VARCHAR(20),
+gender VARCHAR(20),
+cst_create_date DATE,
+dwh_create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+DROP TABLE IF EXISTS silver.prd_info;
+CREATE TABLE silver.prd_info(
+	prd_id INT,
+	cat_id VARCHAR(50),
+	prd_key VARCHAR(50),
+	prd_nm VARCHAR(50),
+	prd_cost INT,
+	prd_line VARCHAR(50),
+	prd_start_dt DATE,
+	prd_end_dt DATE,
+	dwh_create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+);
+
+DROP TABLE IF EXISTS silver.sales_details;
+CREATE TABLE silver.sales_details(
+	sls_ord_num VARCHAR(50),
+	sls_prd_key VARCHAR(50),
+	sls_cust_id INT,
+	sls_order_dt DATE,
+	sls_ship_dt DATE,
+	sls_due_dt DATE,
+	sls_sales INT,
+	sls_quantity INT,
+	sls_price INT,
+	dwh_create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+);
+end_batch_time:= clock_timestamp();
+
+RAISE NOTICE 'Time to create CRM tables % seconds ', end_batch_time-start_batch_time;
+RAISE NOTICE '';
+
+RAISE NOTICE '=========================================';
+RAISE NOTICE '-----------CREATE TABLE PRD -------------';
+RAISE NOTICE '=========================================';
+start_batch_time := clock_timestamp();
+
+DROP TABLE IF EXISTS silver.cust_az12;
+CREATE TABLE silver.cust_az12(
+		cid VARCHAR(50),
+		bdate DATE,
+		gen VARCHAR(10),
+		dwh_create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+		);
+
+
+DROP TABLE IF EXISTS silver.loc_a101;
+CREATE TABLE silver.loc_a101(
+			cid VARCHAR(50),
+			cntry VARCHAR(20),
+			dwh_create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+DROP TABLE  IF EXISTS silver.PX_CAT_G1V2;
+CREATE TABLE silver.PX_CAT_G1V2(
+	ID VARCHAR(50),
+	cat VARCHAR(50),
+	subcat VARCHAR(50),
+	maintenance VARCHAR(50)
+	
+);
+
+end_batch_time:=clock_timestamp();
+RAISE NOTICE 'Time to create PRD tables % seconds ', end_batch_time-start_batch_time;
+RAISE NOTICE '';
+procedure_end_time:=clock_timestamp();
+RAISE NOTICE 'Table created successfully in time % seconds',procedure_end_time-procedure_start_time;
+END; 
+$$;
+CALL silver.create_table_silver()
