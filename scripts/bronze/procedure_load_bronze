@@ -1,1 +1,171 @@
+/*
+===============================================================================
+Stored Procedure: Load Bronze Layer (Source -> Bronze)
+===============================================================================
+Script Purpose:
+    This stored procedure loads data into the 'bronze' schema from external CSV files. 
+    It performs the following actions:
+    - Truncates the bronze tables before loading data.
+    - Uses the COPY command to load data from csv Files to bronze tables.
 
+USE COMMAND TO RUN PROCEDURE:
+    CALL bronze.load_bronze;
+===============================================================================
+*/
+
+CREATE OR REPLACE PROCEDURE bronze.load_bronze()
+LANGUAGE plpgsql
+AS $$
+DECLARE 
+		start_time TIMESTAMP;
+		end_time TIMESTAMP;
+		procedure_start_time TIMESTAMP;
+		procedure_end_time TIMESTAMP;
+		start_batch_time TIMESTAMP;
+		end_batch_time TIMESTAMP;
+
+BEGIN
+		
+		RAISE NOTICE '==============================================='; 
+		RAISE NOTICE '-------------LOADING BRONZE TABLE--------------'; 
+		RAISE NOTICE '==============================================='; 
+		start_time:=clock_timestamp();
+
+		RAISE NOTICE '========================================='; 
+		RAISE NOTICE '-------------LOAD CRM TABLE--------------'; 
+		RAISE NOTICE '========================================='; 
+		start_batch_time:=clock_timestamp();
+		RAISE NOTICE '========================================='; 
+		RAISE NOTICE '-------LOAD TABLE bronze.cust_info-------'; 
+		RAISE NOTICE '========================================='; 
+		
+		procedure_start_time:=clock_timestamp();
+
+		RAISE NOTICE 'Truncating Table bronze.cust_info';
+		TRUNCATE TABLE bronze.cust_info ;
+		RAISE NOTICE 'LOAD DATA INTO bronze.cust_info';
+		COPY bronze.cust_info
+		FROM 'E:\HIMANSHUR\SQL\sql_dwh_project\source_crm\cust_info.csv'
+		DELIMITER ','
+		CSV HEADER;
+		procedure_end_time:=clock_timestamp();
+		RAISE NOTICE 'LOAD TIME:= % sec % msec ',EXTRACT (SECOND FROM (procedure_end_time - procedure_start_time)) ::INT,
+									(EXTRACT (MILLISECONDS FROM (procedure_end_time-procedure_start_time))::INT)%1000 ;
+		
+
+		RAISE NOTICE '========================================='; 
+		RAISE NOTICE '-------LOAD TABLE bronze.prd_info-------'; 
+		RAISE NOTICE '========================================='; 
+		
+		procedure_start_time:=clock_timestamp();
+
+		RAISE NOTICE 'Truncating Table bronze.prd_info';
+		TRUNCATE TABLE bronze.prd_info ;
+		RAISE NOTICE 'LOAD DATA INTO bronze.prd_info';
+		COPY bronze.prd_info
+		FROM 'E:\HIMANSHUR\SQL\sql_dwh_project\source_crm\prd_info.csv'
+		DELIMITER ','
+		CSV HEADER;
+		procedure_end_time:=clock_timestamp();
+		RAISE NOTICE 'LOAD TIME:= % sec % msec ',EXTRACT (SECOND FROM (procedure_end_time - procedure_start_time)) ::INT,
+									(EXTRACT (MILLISECONDS FROM (procedure_end_time-procedure_start_time))::INT) % 1000 ;
+
+		
+		RAISE NOTICE '============================================='; 
+		RAISE NOTICE '-------LOAD TABLE bronze.sales_details-------'; 
+		RAISE NOTICE '============================================='; 
+		
+		procedure_start_time:=clock_timestamp();
+
+		RAISE NOTICE 'Truncating Table bronze.sales_details';
+		TRUNCATE TABLE bronze.sales_details ;
+		RAISE NOTICE 'LOAD DATA INTO bronze.sales_details';
+		COPY bronze.sales_details
+		FROM 'E:\HIMANSHUR\SQL\sql_dwh_project\source_crm\sales_details.csv'
+		DELIMITER ','
+		CSV HEADER;
+		procedure_end_time:=clock_timestamp();
+		RAISE NOTICE 'LOAD TIME:= % sec % msec ',EXTRACT (SECOND FROM (procedure_end_time - procedure_start_time)) ::INT,
+									(EXTRACT (MILLISECONDS FROM (procedure_end_time-procedure_start_time))::INT)%1000 ;
+		RAISE NOTICE '========================================='; 
+		RAISE NOTICE '---------LOAD CRM TABLE COMPLETED---------'; 
+		RAISE NOTICE '========================================='; 
+		end_batch_time:=clock_timestamp();
+		RAISE NOTICE 'LOAD CRM TABLE TIME:= % sec % msec ',EXTRACT (SECOND FROM (end_batch_time - start_batch_time)) ::INT,
+									(EXTRACT (MILLISECONDS FROM (end_batch_time - start_batch_time))::INT)%1000 ;
+
+		RAISE NOTICE '======================================='; 
+		RAISE NOTICE '-------------LOAD ERP TABLE -----------'; 
+		RAISE NOTICE '======================================='; 
+		start_batch_time:=clock_timestamp();
+		RAISE NOTICE '========================================='; 
+		RAISE NOTICE '-------LOAD TABLE bronze.CUST_AZ12-------'; 
+		RAISE NOTICE '========================================='; 
+		
+		procedure_start_time:=clock_timestamp();
+
+		RAISE NOTICE 'Truncating Table bronze.bronze.CUST_AZ12';
+		TRUNCATE TABLE bronze.CUST_AZ12 ;
+		RAISE NOTICE 'LOAD DATA INTO bronze.CUST_AZ12';
+		COPY bronze.CUST_AZ12
+		FROM 'E:\HIMANSHUR\SQL\sql_dwh_project\source_erp\CUST_AZ12.csv'
+		DELIMITER ','
+		CSV HEADER;
+		procedure_end_time:=clock_timestamp();
+		RAISE NOTICE 'LOAD CUST_AZ12 TIME:= % sec % msec ',EXTRACT (SECOND FROM (procedure_end_time - procedure_start_time)) ::INT,
+									(EXTRACT (MILLISECONDS FROM (procedure_end_time-procedure_start_time))::INT)%1000 ;
+
+		RAISE NOTICE '========================================='; 
+		RAISE NOTICE '-------LOAD TABLE bronze.LOC_A101-------'; 
+		RAISE NOTICE '========================================='; 
+		
+		procedure_start_time:=clock_timestamp();
+
+		RAISE NOTICE 'Truncating Table bronze.LOC_A101';
+		TRUNCATE TABLE bronze.LOC_A101 ;
+		RAISE NOTICE 'LOAD DATA INTO bronze.LOC_A101';
+		COPY bronze.LOC_A101
+		FROM 'E:\HIMANSHUR\SQL\sql_dwh_project\source_erp\LOC_A101.csv'
+		DELIMITER ','
+		CSV HEADER;
+		procedure_end_time:=clock_timestamp();
+		RAISE NOTICE 'LOAD TIME:= % sec % msec ',EXTRACT (SECOND FROM (procedure_end_time - procedure_start_time)) ::INT,
+									(EXTRACT (MILLISECONDS FROM (procedure_end_time-procedure_start_time))::INT)%1000 ;
+		RAISE NOTICE '========================================='; 
+		RAISE NOTICE '------LOAD TABLE bronze.PX_CAT_G1V2------'; 
+		RAISE NOTICE '========================================='; 
+		
+		procedure_start_time:=clock_timestamp();
+
+		RAISE NOTICE 'Truncating Table bronze.bronze.PX_CAT_G1V2';
+		TRUNCATE TABLE bronze.PX_CAT_G1V2 ;
+		RAISE NOTICE 'LOAD DATA INTO bronze.PX_CAT_G1V2';
+		COPY bronze.PX_CAT_G1V2
+		FROM 'E:\HIMANSHUR\SQL\sql_dwh_project\source_erp\PX_CAT_G1V2.csv'
+		DELIMITER ','
+		CSV HEADER;
+		procedure_end_time:=clock_timestamp();
+		RAISE NOTICE 'LOAD TIME:= % sec % msec ',EXTRACT (SECOND FROM (procedure_end_time - procedure_start_time)) ::INT,
+									(EXTRACT (MILLISECONDS FROM (procedure_end_time-procedure_start_time))::INT)%1000 ;
+		
+		RAISE NOTICE '========================================='; 
+		RAISE NOTICE '---------LOAD ERP TABLE COMPLETED---------'; 
+		RAISE NOTICE '========================================='; 
+		end_batch_time:=clock_timestamp();
+		RAISE NOTICE 'LOAD ERP TABLE TIME:= % sec % msec ',EXTRACT (SECOND FROM (end_batch_time - start_batch_time)) ::INT,
+									(EXTRACT (MILLISECONDS FROM (end_batch_time - start_batch_time))::INT)%1000 ;
+
+		RAISE NOTICE '==============================================='; 
+		RAISE NOTICE '---------LOADING BRONZE TABLE COMPLETED--------'; 
+		RAISE NOTICE '==============================================='; 
+		end_time:= clock_timestamp();
+		RAISE NOTICE 'LOAD BRONZE TIME:= % sec % msec ',EXTRACT (SECOND FROM (end_time - start_time)) ::INT,
+									(EXTRACT (MILLISECONDS FROM (end_time - start_time))::INT)%1000 ;
+
+EXCEPTION
+WHEN OTHERS THEN
+RAISE NOTICE 'ERROR OCCURRED';
+RAISE NOTICE 'SQLSTATE: %', SQLSTATE;
+RAISE NOTICE 'ERROR MESSAGE: %', SQLERRM;
+END;
+$$;
