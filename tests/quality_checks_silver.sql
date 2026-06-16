@@ -85,7 +85,7 @@ WHERE prd_end_dt < prd_start_dt;
 -- Check for Invalid Dates
 -- Expectation: No Invalid Dates
 SELECT 
-    NULLIF(sls_due_dt, 0) AS sls_due_dt 
+    COALESCE(sls_due_dt, 0) AS sls_due_dt 
 FROM bronze.crm_sales_details
 WHERE sls_due_dt <= 0 
     OR LEN(sls_due_dt) != 8 
@@ -125,7 +125,7 @@ SELECT DISTINCT
     bdate 
 FROM silver.erp_cust_az12
 WHERE bdate < '1924-01-01' 
-   OR bdate > GETDATE();
+   OR bdate > CURRENT_DATE;
 
 -- Data Standardization & Consistency
 SELECT DISTINCT 
